@@ -4,7 +4,6 @@ namespace Oasin\Themevel\Managers;
 
 use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
-use Noodlehaus\Config;
 use Oasin\Blockvel\Contracts\BlockvelContract;
 use Illuminate\Support\Arr;
 
@@ -13,6 +12,11 @@ class Blockvel implements BlockvelContract
 
 {
 
+    protected $apiKey;
+
+    protected $password;
+
+    protected $version;
 
     /**
      * The BlockIo instance.
@@ -28,14 +32,48 @@ class Blockvel implements BlockvelContract
      */
     public function __construct(Container $app, Repository $config)
     {
-         {
-        $this->config = $config;
 
-        $this->blockIo = new \BlockIo(
-            $this->config['block_io.apiKey'],
-            $this->config['block_io.pin'],
-            $this->config['block_io.version']
-        );
+        $this->config = $config;
+        $apiKey = $this->apiKey ?? $this->config['block_io.apiKey'];
+        $pin = $this->password ?? $this->config['block_io.pin'];
+        $version = $this->version ?? $this->config['block_io.version'];
+        $this->blockIo = new \BlockIo($apiKey, $pin, $version);
+    }
+
+
+    public function setParameter($key, $value = null)
+    {
+        $this->$key = $value;
+        return $this;
+    }
+
+
+    public function getParameter($key)
+    {
+        return $this->$key;
+    }
+
+
+    public function setApiKey($value)
+    {
+        return $this->setParameter('apiKey', $value);
+    }
+
+
+    public function getApiKey()
+    {
+        return $this->getParameter('apiKey');
+    }
+
+    public function setPassword($value)
+    {
+        return $this->setParameter('password', $value);
+    }
+
+
+    public function getPassword()
+    {
+        return $this->getParameter('password');
     }
 
     /**
